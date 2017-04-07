@@ -14,6 +14,17 @@ def determine_host_address():
 
     return host_address
 
+def determine_broadcast_address():
+    """Determines the broadcast address of the subnet."""
+    host_address = determine_host_address()
+    byte_representation = socket.aton(host_address)
+    if len(byte_representation) == 4: # Check for IPv4 (3 bytes + 1 stop)
+        bc = socket.inet_ntoa(byte_representation[:3] + b'\xff')
+    else: # IPv6 doesn't support broadcast addresses.
+        bc = None
+
+    return bc
+
 
 def recvall(connection, num_bytes):
     """Reads `num_bytes` bytes from the specified connection.
@@ -97,3 +108,22 @@ def connect(host, port, disable_nagle=True):
     fd.connect((host, port))
 
     return fd
+
+def allocate_udp_listening_port(address='', port=0):
+    fd = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    fd.bind((address, port))
+    port = int(fd.getsockname()[1])
+
+    return fd, port
+
+def allocate_tcp_listening_port(address='', port=0, disable_nagle=True):
+    fd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    if disable_nagle:
+        fd.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    fd.bind((address, port))
+    fd.listen(5)
+    port = int(fd.getsockname()[1])
+
+    return fd, port
