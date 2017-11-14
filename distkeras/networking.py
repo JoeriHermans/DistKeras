@@ -3,17 +3,26 @@
 ## BEGIN Imports. ##############################################################
 
 import pickle
-
+import os
 import socket
 
 ## END Imports. ################################################################
 
 def determine_host_address():
-    """Determines the human-readable host address of the local machine."""
-    host_address = socket.gethostbyname(socket.gethostname())
-
+    """Determines the human-readable host address of the local machine. 
+    First checks if environment variable DISTKERAS_HOSTNAME is set, and 
+    if so uses this as host name. Otherwise, checks using socket"""
+    host_env_var = 'DISTKERAS_HOSTNAME'
+    host_address = os.environ.get(host_env_var, socket.gethostbyname(socket.gethostname()))
     return host_address
 
+def determine_port():
+    """Determines port to connect to on local machine. 
+    First checks if environment variable DISTKERAS_PORT is set, and 
+    if so uses this as port. Otherwise, assign to a default"""
+    port_env_var = 'DISTKERAS_PORT'
+    port = int(os.environ.get(port_env_var, 5000))
+    return port
 
 def recvall(connection, num_bytes):
     """Reads `num_bytes` bytes from the specified connection.
