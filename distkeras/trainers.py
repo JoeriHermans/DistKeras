@@ -338,10 +338,10 @@ class EnsembleTrainer(Trainer):
         if shuffle:
             dataframe = shuffle(dataframe)
         # Check if we need to repartition the dataframe.
-        if num_partitions >= self.num_workers:
-            dataframe = dataframe.coalesce(self.num_workers)
+        if num_partitions >= self.num_ensembles:
+            dataframe = dataframe.coalesce(self.num_ensembles)
         else:
-            dataframe = dataframe.repartition(self.num_workers)
+            dataframe = dataframe.repartition(self.num_ensembles)
         # Start the training procedure.
         self.record_training_start()
         # Train the models in parallel.
