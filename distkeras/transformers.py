@@ -283,9 +283,15 @@ class OneHotTransformer(Transformer):
         Only for internal use.
         """
         label = row[self.input_column]
-        vector = to_one_hot_encoded_dense(label, self.output_dimensionality)
-        new_row = new_dataframe_row(row, self.output_column, vector.tolist())
 
+        if(isinstance(label, types.ListType)):
+                vector = np.zeros((len(label), self.output_dimensionality))
+                for i in range(len(label)):
+                        vector[i] = to_one_hot_encoded_dense(label[i], self.output_dimensionality)
+        else:
+                vector = to_one_hot_encoded_dense(label, self.output_dimensionality)
+
+        new_row = new_dataframe_row(row, self.output_column, vector.tolist())
         return new_row
 
     def transform(self, dataframe):
