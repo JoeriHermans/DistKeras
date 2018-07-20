@@ -38,6 +38,8 @@ cd dist-keras
 pip install -e .
 ```
 
+Note that installation should be done on **all** cluster machines (https://github.com/cerndb/dist-keras/issues/36#issuecomment-335547831).
+
 ### General notes
 
 #### .bashrc
